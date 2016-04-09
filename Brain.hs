@@ -22,6 +22,9 @@ incChar = addToChar 1
 decChar :: Char -> Char
 decChar = addToChar (-1)
 
+forward :: Memory -> Memory
+forward (BrainMemory first (x:xs)) = BrainMemory (x:first) xs
+
 get :: Memory -> Char
 get (BrainMemory first (x:xs)) = x
 

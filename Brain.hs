@@ -2,16 +2,16 @@ module Foo where
 
 import Char
 
-data Memory = BrainMemory [Char] [Char]
+data Memory = Tape [Char] [Char]
 
 instance Show Memory where
-  show (BrainMemory first last) = show last
+  show (Tape first last) = show last
 
 inc :: Memory -> Memory
-inc (BrainMemory first (x:xs)) = BrainMemory first ((incChar x):xs)
+inc (Tape first (x:xs)) = Tape first ((incChar x):xs)
 
 dec :: Memory -> Memory
-dec (BrainMemory first (x:xs)) = BrainMemory first ((decChar x):xs)
+dec (Tape first (x:xs)) = Tape first ((decChar x):xs)
 
 addToChar :: Int -> Char -> Char
 addToChar n c = chr (ord c + n)
@@ -23,12 +23,19 @@ decChar :: Char -> Char
 decChar = addToChar (-1)
 
 forward :: Memory -> Memory
-forward (BrainMemory first (x:xs)) = BrainMemory (x:first) xs
+forward (Tape first (x:[])) = Tape (x:first) [chr 0]
+forward (Tape first (x:xs)) = Tape (x:first) xs
+
+backward :: Memory -> Memory
+backward (Tape (x:xs) last) = Tape xs (x:last)
 
 get :: Memory -> Char
-get (BrainMemory first (x:xs)) = x
+get (Tape first (x:xs)) = x
 
-foo = BrainMemory ['1', '3', '5'] ['6', '8', 'A']
+empty :: Memory
+empty = Tape [] [chr 0]
+
+foo = Tape ['1', '3', '5'] ['6', '8', 'A']
 --get foo
 
 -- data Color = Green | Red | Blue | Yellow | White | Poo deriving (Show)

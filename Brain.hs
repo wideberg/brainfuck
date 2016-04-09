@@ -10,8 +10,17 @@ instance Show Memory where
 inc :: Memory -> Memory
 inc (BrainMemory first (x:xs)) = BrainMemory first ((incChar x):xs)
 
+dec :: Memory -> Memory
+dec (BrainMemory first (x:xs)) = BrainMemory first ((decChar x):xs)
+
+addToChar :: Int -> Char -> Char
+addToChar n c = chr (ord c + n)
+
 incChar :: Char -> Char
-incChar x = chr (ord x + 1)
+incChar = addToChar 1
+
+decChar :: Char -> Char
+decChar = addToChar (-1)
 
 get :: Memory -> Char
 get (BrainMemory first (x:xs)) = x

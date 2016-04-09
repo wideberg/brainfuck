@@ -36,25 +36,14 @@ empty :: Memory
 empty = Tape [] [chr 0]
 
 foo = Tape ['1', '3', '5'] ['6', '8', 'A']
---get foo
 
--- data Color = Green | Red | Blue | Yellow | White | Poo deriving (Show)
+program :: String
+program = "+++"
 
---data Pos = Up | North | East | South | West | Down deriving (Show)
+run :: Memory -> String -> String
+run mem (p:ps) = ps
 
---data Die = Die Color Color Color Color Color Color deriving (Show)
-
---foo x = x * x
-
---d = (Die Blue Blue Blue Blue Blue Blue)
---
---bar = show d
---
---getColor :: Die -> Pos -> Color
---getColor (Die up north east south west down) pos = case pos of
---  Up -> up
---  North -> north
---  East -> east
---  South -> south
---  West -> west
---  Down -> down
+eval :: Memory -> [Char] -> Memory
+eval m (c:cs) = case c of
+  '+' -> inc m
+  '-' -> dec m

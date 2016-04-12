@@ -37,13 +37,79 @@ empty = Tape [] [chr 0]
 
 foo = Tape ['1', '3', '5'] ['6', '8', 'A']
 
-program :: String
-program = "+++"
+program :: Program
+program = PP "+->+"
 
-run :: Memory -> String -> String
-run mem (p:ps) = ps
+data Program  = PP [Char] deriving Show
+--data Stack = Stack Program
+data State = State {
+  memory :: Memory,
+  stack :: [Program],
+  pc :: Program
+} deriving Show
 
-eval :: Memory -> [Char] -> Memory
-eval m (c:cs) = case c of
-  '+' -> inc m
-  '-' -> dec m
+initState = State empty [] program
+run :: State -> State
+run (State memory stack (PP (p:ps))) = State memory' stack' (PP (p:ps)) where
+  memory' = case p of
+    '+' -> inc memory
+    '-' -> dec memory
+    '>' -> forward memory
+    '<' -> backward memory
+  stack' = case p of
+    '[' -> (PP (p:ps)):stack
+    _ -> stack
+
+--case p of
+  --'+' -> inc memory
+
+--data Program = Main [Char] | Sub [Char]
+--data Stack = Stack [Program]
+-- data Instruction = Inc | Dec | Forward | Backward | Output | Input | Sub [Instruction] deriving Show
+--data Program = Program [Instruction]
+--instance Num Program where
+
+--progstring :: String
+--progstring = "+++-<>.,[+--]"
+--
+--prog = foldl parser [] progstring
+--
+--parser :: [Instruction] -> Char -> [Instruction]
+--parser is x = (is ++ parse x)
+--
+--parse :: Char ->
+--parsesub (x:xs) = 
+--parse :: String -> ([Instruction], String)
+--parse [] = ([], [])
+--parse (']':xs) = ([], xs)
+--parse ('[':xs) = ((Sub sub): parse rest, rest) where
+--  (sub, rest) = parse xs
+--parse (x:xs) = (parse':(parse xs)) where
+--  parse' = case x of
+--    '+' -> Inc
+--    '-' -> Dec
+--    '>' -> Forward
+--    '<' -> Backward
+--    '.' -> Output
+--    ',' -> Input
+    --'[' -> 
+    --']' -> []
+
+--data Program  [Instruction]
+--program :: String
+--program = "+++"
+--program :: Program
+--program = Main "+++"
+
+--run :: (Program, Memory) -> (Program, Memory)
+--run :: Memory -> String -> String
+--run (program, empty) = 
+
+--eval :: Memory -> [Char] -> Memory
+--eval m (c:cs) = case c of
+--  '+' -> inc m
+--  '-' -> dec m
+
+main :: IO ()
+main = do
+  putStrLn $ show (inc empty)

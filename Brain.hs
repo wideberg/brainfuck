@@ -36,7 +36,7 @@ get (Tape first (x:xs)) = x
 empty :: Memory
 empty = Tape [] [chr 0]
 
-foo = Tape ['1', '3', '5'] ['6', '8', 'A']
+--foo = Tape ['1', '3', '5'] ['6', '8', 'A']
 
 program :: Program
 program = "++"
@@ -56,7 +56,7 @@ initState = State empty [] program Running
 eval :: State -> State
 --eval (State _ [] (_:_) _ ) = error "Invalid state"
 --eval (State _memory _stack [] status) = State _memory _stack [] Exit
-eval (State memory stack (p:ps) status) = State memory' stack' ps' status where
+eval (State memory stack (p:ps) _status) = State memory' stack' ps' _status where
 
   memory' :: Memory
   memory' = case p of
@@ -64,6 +64,7 @@ eval (State memory stack (p:ps) status) = State memory' stack' ps' status where
     '-' -> dec memory
     '>' -> forward memory
     '<' -> backward memory
+    _ -> error "Unknown operation"
 
   stack' :: Stack
   stack' = case p of

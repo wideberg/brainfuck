@@ -92,6 +92,8 @@ run :: State -> IO ()
 run (State mem stk pc st) = do
   putStrLn "Running..."
   case st of
+    Running -> do
+      continueRun mem
     Exit -> do
       putStrLn "received exit"
     Input -> do
@@ -107,7 +109,12 @@ run (State mem stk pc st) = do
       let foo = eval (State mem stk pc st)
       putStrLn "Again..."
       run foo
-    _ -> do 
+    _ -> do
+      error $ "Unknown eval status" ++ (show st)
+
+  where
+    continueRun :: Memory -> IO ()
+    continueRun mem = do
       let foo = eval (State mem stk pc st)
       putStrLn "Again..."
       run foo

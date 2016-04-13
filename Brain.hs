@@ -38,27 +38,40 @@ empty = Tape [] [chr 0]
 foo = Tape ['1', '3', '5'] ['6', '8', 'A']
 
 program :: Program
-program = PP "+->+"
+program = "+"
 
-data Program  = PP [Char] deriving Show
+type Program  = [Char]
+type Stack = [Program]
+data Status = Running | WaitForInput | Output | Exit deriving Show
 --data Stack = Stack Program
 data State = State {
   memory :: Memory,
   stack :: [Program],
-  pc :: Program
+  pc :: Program,
+  status :: Status
 } deriving Show
 
-initState = State empty [] program
-run :: State -> State
-run (State memory stack (PP (p:ps))) = State memory' stack' (PP (p:ps)) where
+initState = State empty [] program Running
+eval :: State -> State
+eval (State _memory _stack [] status) = State _memory _stack [] Exit
+eval (State memory (s:ss) (p:ps) status) = State memory' stack' ps' status where
+
+  memory' :: Memory
   memory' = case p of
     '+' -> inc memory
     '-' -> dec memory
     '>' -> forward memory
     '<' -> backward memory
+
+  stack' :: Stack
   stack' = case p of
-    '[' -> (PP (p:ps)):stack
-    _ -> stack
+    '[' -> (p:ps):(s:ss)
+    _ -> (s:ss)
+
+  ps' :: [Char]
+  ps' = case p of
+    ']' -> s
+    _ -> ps
 
 --case p of
   --'+' -> inc memory

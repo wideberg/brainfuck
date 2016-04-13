@@ -5,9 +5,10 @@ import Char
 data Memory = Tape [Char] [Char]
 
 instance Show Memory where
-  show (Tape first last) = show last
+  show (Tape _beginning ending) = show ending
 
 inc :: Memory -> Memory
+--inc (Tape _ []) -> 
 inc (Tape first (x:xs)) = Tape first ((incChar x):xs)
 
 dec :: Memory -> Memory
@@ -38,7 +39,7 @@ empty = Tape [] [chr 0]
 foo = Tape ['1', '3', '5'] ['6', '8', 'A']
 
 program :: Program
-program = "+"
+program = "++"
 
 type Program  = [Char]
 type Stack = [Program]
@@ -53,8 +54,9 @@ data State = State {
 
 initState = State empty [] program Running
 eval :: State -> State
-eval (State _memory _stack [] status) = State _memory _stack [] Exit
-eval (State memory (s:ss) (p:ps) status) = State memory' stack' ps' status where
+--eval (State _ [] (_:_) _ ) = error "Invalid state"
+--eval (State _memory _stack [] status) = State _memory _stack [] Exit
+eval (State memory stack (p:ps) status) = State memory' stack' ps' status where
 
   memory' :: Memory
   memory' = case p of
@@ -65,12 +67,12 @@ eval (State memory (s:ss) (p:ps) status) = State memory' stack' ps' status where
 
   stack' :: Stack
   stack' = case p of
-    '[' -> (p:ps):(s:ss)
-    _ -> (s:ss)
+    '[' -> (p:ps):(stack)
+    _ -> stack
 
   ps' :: [Char]
   ps' = case p of
-    ']' -> s
+    ']' -> head stack
     _ -> ps
 
 --case p of

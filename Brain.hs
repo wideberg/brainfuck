@@ -1,4 +1,4 @@
-module Foo where
+module Main where
 
 import Char
 

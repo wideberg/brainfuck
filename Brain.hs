@@ -42,7 +42,7 @@ empty = Tape [] [chr 0]
 --foo = Tape ['1', '3', '5'] ['6', '8', 'A']
 
 program :: Program
-program = "++,+."
+program = ",>,>,<<.>.>."
 
 type Program  = [Char]
 type Stack = [Program]
@@ -58,6 +58,7 @@ data State = State {
 eval :: State -> State
 --eval (State _ [] (_:_) _ ) = error "Invalid state"
 --eval (State _memory _stack [] status) = State _memory _stack [] Exit
+eval (State memory stack [] _) = State memory stack [] Exit
 eval (State memory stack (p:ps) _status) = State memory' stack' ps' status' where
 
   memory' :: Memory
@@ -81,11 +82,11 @@ eval (State memory stack (p:ps) _status) = State memory' stack' ps' status' wher
 
   status' :: Status
   status' = case p of
-    '+' -> Running
-    '-' -> Running
     '.' -> Output (get memory)
     ',' -> Input
-    _ -> error "Unknown operation (status)"
+    _ -> Running
+--    '-' -> Running
+--    _ -> error "Unknown operation (status)"
 
 run :: State -> IO ()
 run (State mem stk pc st) = do
@@ -103,6 +104,9 @@ run (State mem stk pc st) = do
       run foo
     Output c -> do
       putStrLn $ "output: " ++ [c]
+      let foo = eval (State mem stk pc st)
+      putStrLn "Again..."
+      run foo
     _ -> do 
       let foo = eval (State mem stk pc st)
       putStrLn "Again..."

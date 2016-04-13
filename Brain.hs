@@ -52,7 +52,6 @@ data State = State {
   status :: Status
 } deriving Show
 
-initState = State empty [] program Running
 eval :: State -> State
 --eval (State _ [] (_:_) _ ) = error "Invalid state"
 --eval (State _memory _stack [] status) = State _memory _stack [] Exit
@@ -76,6 +75,22 @@ eval (State memory stack (p:ps) _status) = State memory' stack' ps' _status wher
     ']' -> head stack
     _ -> ps
 
+run :: State -> IO ()
+run (State mem stk pc st) = do
+  putStrLn "Running..."
+  case st of
+    Exit -> do
+      putStrLn "received exit"
+    _ -> do 
+      let foo = eval (State mem stk pc st)
+      putStrLn "Again..."
+      run foo
+
+main :: IO ()
+main = do
+  let initState = (State empty [] program Running)
+  run initState  
+  putStrLn "Exiting..."
 --case p of
   --'+' -> inc memory
 
@@ -126,6 +141,6 @@ eval (State memory stack (p:ps) _status) = State memory' stack' ps' _status wher
 --  '+' -> inc m
 --  '-' -> dec m
 
-main :: IO ()
-main = do
-  putStrLn $ show (inc empty)
+--main :: IO ()
+--main = do
+--  putStrLn $ show (inc empty)

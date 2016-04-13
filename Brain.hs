@@ -101,14 +101,10 @@ run (State mem stk pc st) = do
       c <- getChar
       putStrLn $ "got: " ++ [c]
       let mem' = set c mem
-      let foo = eval (State mem' stk pc st)
-      putStrLn "Again..."
-      run foo
+      continueRun mem'
     Output c -> do
       putStrLn $ "output: " ++ [c]
-      let foo = eval (State mem stk pc st)
-      putStrLn "Again..."
-      run foo
+      continueRun mem
     _ -> do
       error $ "Unknown eval status" ++ (show st)
 

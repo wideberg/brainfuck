@@ -2,13 +2,14 @@ module Main where
 
 import Char
 
+
+-- Memory
 data Memory = Tape [Char] [Char]
 
 instance Show Memory where
   show (Tape _beginning ending) = show ending
 
 inc :: Memory -> Memory
---inc (Tape _ []) -> 
 inc (Tape first (x:xs)) = Tape first ((incChar x):xs)
 
 dec :: Memory -> Memory
@@ -39,10 +40,11 @@ set c (Tape beginning (x:xs)) = Tape beginning (c:xs)
 empty :: Memory
 empty = Tape [] [chr 0]
 
---foo = Tape ['1', '3', '5'] ['6', '8', 'A']
-
-program :: Program
-program = Program [] ",>,>,+<+<+.>.>."
+-- Program
+data Program = Program {
+  beginning:: [Char],
+  ending:: [Char]
+  } deriving Show
 
 current :: Program -> Char
 current (Program _ []) = error "end of program"
@@ -53,26 +55,18 @@ next (Program beginning (x:ending)) = Program (x:beginning) ending
 --matchingRightBracket :: Program -> Program
 --matchingRightBracket (p:ps) =
 
-data Program = Program {
-  beginning:: [Char],
-  ending:: [Char]
-  } deriving Show
-
---type Program  = [Char]
---type Stack = [Program]
+-- Interpreter
 data Status = Running | Input | Output Char | Exit deriving Show
---data Stack = Stack Program
 data State = State {
   memory :: Memory,
---  stack :: [Program],
   pc :: Program,
   status :: Status
 } deriving Show
 
+program :: Program
+program = Program [] ",>,>,+<+<+.>.>."
+
 eval :: State -> State
---eval (State _ [] (_:_) _ ) = error "Invalid state"
---eval (State _memory _stack [] status) = State _memory _stack [] Exit
---eval (State memory stack [] _) = State memory stack [] Exit
 eval (State memory p _status) = State memory' ps' status' where
 
   memory' :: Memory
@@ -82,12 +76,6 @@ eval (State memory p _status) = State memory' ps' status' where
     '>' -> forward memory
     '<' -> backward memory
     _ -> memory
---    _ -> error $ "Unknown operation (mem)" ++ [p]
-
---  stack' :: Stack
---  stack' = case (current p) of
---    --'[' -> (p:ps):(stack)
---    _ -> stack
 
   ps' :: Program
   ps' = case (current p) of

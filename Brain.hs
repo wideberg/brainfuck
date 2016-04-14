@@ -42,12 +42,21 @@ empty = Tape [] [chr 0]
 --foo = Tape ['1', '3', '5'] ['6', '8', 'A']
 
 program :: Program
-program = ",>,>,+<+<+.>.>."
+program = Program [] ",>,>,+<+<+.>.>."
+
+current :: Program -> Char
+current (Program _ (p:ps)) = p
+
 
 --matchingRightBracket :: Program -> Program
 --matchingRightBracket (p:ps) =
 
-type Program  = [Char]
+data Program = Program {
+  beginning:: [Char],
+  ending:: [Char]
+  } deriving Show
+  
+--type Program  = [Char]
 type Stack = [Program]
 data Status = Running | Input | Output Char | Exit deriving Show
 --data Stack = Stack Program
@@ -61,11 +70,11 @@ data State = State {
 eval :: State -> State
 --eval (State _ [] (_:_) _ ) = error "Invalid state"
 --eval (State _memory _stack [] status) = State _memory _stack [] Exit
-eval (State memory stack [] _) = State memory stack [] Exit
-eval (State memory stack (p:ps) _status) = State memory' stack' ps' status' where
+--eval (State memory stack [] _) = State memory stack [] Exit
+eval (State memory stack p _status) = State memory' stack' ps' status' where
 
   memory' :: Memory
-  memory' = case p of
+  memory' = case (current p) of
     '+' -> inc memory
     '-' -> dec memory
     '>' -> forward memory
@@ -74,17 +83,17 @@ eval (State memory stack (p:ps) _status) = State memory' stack' ps' status' wher
 --    _ -> error $ "Unknown operation (mem)" ++ [p]
 
   stack' :: Stack
-  stack' = case p of
-    '[' -> (p:ps):(stack)
+  stack' = case (current p) of
+    --'[' -> (p:ps):(stack)
     _ -> stack
 
-  ps' :: [Char]
-  ps' = case p of
-    ']' -> head stack
-    _ -> ps
+  ps' :: Program
+  ps' = case (current p) of
+    --']' -> head stack
+    _ -> Program [] []
 
   status' :: Status
-  status' = case p of
+  status' = case (current p) of
     '.' -> Output (get memory)
     ',' -> Input
     _ -> Running

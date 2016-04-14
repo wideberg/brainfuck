@@ -42,7 +42,10 @@ empty = Tape [] [chr 0]
 --foo = Tape ['1', '3', '5'] ['6', '8', 'A']
 
 program :: Program
-program = ",>,>,<<.>.>."
+program = ",>,>,+<+<+.>.>."
+
+--matchingRightBracket :: Program -> Program
+--matchingRightBracket (p:ps) =
 
 type Program  = [Char]
 type Stack = [Program]
@@ -90,20 +93,21 @@ eval (State memory stack (p:ps) _status) = State memory' stack' ps' status' wher
 
 run :: State -> IO ()
 run (State mem stk pc st) = do
-  putStrLn "Running..."
+  --putStrLn "Running..."
   case st of
     Running -> do
       continueRun mem
     Exit -> do
       putStrLn "received exit"
     Input -> do
-      putStrLn "input: "
+--      putStrLn "input: "
       c <- getChar
-      putStrLn $ "got: " ++ [c]
+--      putStrLn $ "got: " ++ [c]
       let mem' = set c mem
       continueRun mem'
     Output c -> do
-      putStrLn $ "output: " ++ [c]
+      putChar c
+--      putStrLn $ "output: " ++ [c]
       continueRun mem
     _ -> do
       error $ "Unknown eval status" ++ (show st)
@@ -112,11 +116,11 @@ run (State mem stk pc st) = do
     continueRun :: Memory -> IO ()
     continueRun mem = do
       let foo = eval (State mem stk pc st)
-      putStrLn "Again..."
+    --  putStrLn "Again..."
       run foo
 
 main :: IO ()
 main = do
   let initState = (State empty [] program Running)
   run initState  
-  putStrLn "Exiting..."
+  --putStrLn "Exiting..."

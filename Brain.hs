@@ -56,6 +56,7 @@ next (Program beginning (x:ending)) = Program (x:beginning) ending
 --matchingRightBracket (p:ps) =
 
 -- Interpreter
+
 data Status = Running | Input | Output Char | Exit deriving Show
 data State = State {
   memory :: Memory,
@@ -67,6 +68,7 @@ program :: Program
 program = Program [] ",>,>,+<+<+.>.>."
 
 eval :: State -> State
+eval (State memory (Program _xs []) _) = State memory (Program _xs []) Exit
 eval (State memory p _status) = State memory' ps' status' where
 
   memory' :: Memory

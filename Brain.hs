@@ -45,9 +45,11 @@ program :: Program
 program = Program [] ",>,>,+<+<+.>.>."
 
 current :: Program -> Char
+current (Program _ []) = error "end of program"
 current (Program _ (p:ps)) = p
 
-
+next :: Program -> Program
+next (Program beginning (x:ending)) = Program (x:beginning) ending
 --matchingRightBracket :: Program -> Program
 --matchingRightBracket (p:ps) =
 
@@ -55,14 +57,14 @@ data Program = Program {
   beginning:: [Char],
   ending:: [Char]
   } deriving Show
-  
+
 --type Program  = [Char]
-type Stack = [Program]
+--type Stack = [Program]
 data Status = Running | Input | Output Char | Exit deriving Show
 --data Stack = Stack Program
 data State = State {
   memory :: Memory,
-  stack :: [Program],
+--  stack :: [Program],
   pc :: Program,
   status :: Status
 } deriving Show
@@ -71,7 +73,7 @@ eval :: State -> State
 --eval (State _ [] (_:_) _ ) = error "Invalid state"
 --eval (State _memory _stack [] status) = State _memory _stack [] Exit
 --eval (State memory stack [] _) = State memory stack [] Exit
-eval (State memory stack p _status) = State memory' stack' ps' status' where
+eval (State memory p _status) = State memory' ps' status' where
 
   memory' :: Memory
   memory' = case (current p) of
@@ -82,15 +84,15 @@ eval (State memory stack p _status) = State memory' stack' ps' status' where
     _ -> memory
 --    _ -> error $ "Unknown operation (mem)" ++ [p]
 
-  stack' :: Stack
-  stack' = case (current p) of
-    --'[' -> (p:ps):(stack)
-    _ -> stack
+--  stack' :: Stack
+--  stack' = case (current p) of
+--    --'[' -> (p:ps):(stack)
+--    _ -> stack
 
   ps' :: Program
   ps' = case (current p) of
     --']' -> head stack
-    _ -> Program [] []
+    _ -> next p
 
   status' :: Status
   status' = case (current p) of
@@ -101,7 +103,7 @@ eval (State memory stack p _status) = State memory' stack' ps' status' where
 --    _ -> error "Unknown operation (status)"
 
 run :: State -> IO ()
-run (State mem stk pc st) = do
+run (State mem pc st) = do
   --putStrLn "Running..."
   case st of
     Running -> do
@@ -124,12 +126,12 @@ run (State mem stk pc st) = do
   where
     continueRun :: Memory -> IO ()
     continueRun mem = do
-      let foo = eval (State mem stk pc st)
+      let foo = eval (State mem pc st)
     --  putStrLn "Again..."
       run foo
 
 main :: IO ()
 main = do
-  let initState = (State empty [] program Running)
+  let initState = (State empty program Running)
   run initState  
   --putStrLn "Exiting..."

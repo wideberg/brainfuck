@@ -20,13 +20,13 @@ prev (Program (x:beginning) ending) = Program beginning (x:ending)
 prev (Program [] ps) = error $ "prev Unexpected: " ++ ps
 
 matchingRightBracket :: Program -> Program
-matchingRightBracket prog = b' 0 prog where
+matchingRightBracket prog = b' 0 (next prog) where
   b' :: Integer -> Program -> Program
   b' 0 p | (current p) == ']' = p
-  b' 0 (Program _beginning (']':ps)) = Program _beginning (']':ps)
-  b' d (Program _beginning (']':ps)) = b' (d-1) $ Program (']':_beginning) ps
-  b' d (Program _beginning ('[':ps)) = b' (d+1) $ Program ('[':_beginning) ps
-  b' _ (Program _beginning (p:ps))  = b' 0 $ Program (p:_beginning) ps
+  b' d p  | (current p) == ']' = b' (d-1) (next p)
+          | (current p) == '[' = b' (d+1) (next p)
+          | otherwise = b' d (next p)
+  b' _ p = error $ "foo: " ++ (show p)
 
 --matchingLeftBracket :: Program -> Program
 --matchingLeftBracket p = b' 0 p where

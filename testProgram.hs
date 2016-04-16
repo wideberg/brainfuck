@@ -17,5 +17,9 @@ testMatchingRightBracket :: Test
 testMatchingRightBracket = TestCase $ assertEqual "should move program pointer to matching right bracket"
   (Program "--++[" "]<>") (matchingRightBracket (Program "" "[++--]<>"))
 
+testMatchingRightBracketNested :: Test
+testMatchingRightBracketNested = TestCase $ assertEqual "should move program pointer to matching right bracket"
+  (Program "-][-++[" "]<>") (matchingRightBracket (Program "" "[++-[]-]<>"))
+
 main :: IO Counts
-main = runTestTT $ TestList [testNew, testMatchingRightBracket]
+main = runTestTT $ TestList [testNew, testMatchingRightBracket, testMatchingRightBracketNested]

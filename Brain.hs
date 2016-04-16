@@ -52,8 +52,28 @@ current (Program _ (p:ps)) = p
 
 next :: Program -> Program
 next (Program beginning (x:ending)) = Program (x:beginning) ending
---matchingRightBracket :: Program -> Program
---matchingRightBracket (p:ps) =
+
+prev :: Program -> Program
+prev (Program (x:beginning) ending) = Program beginning (x:ending)
+prev (Program [] ps) = error $ "Unexpected: " ++ ps
+
+matchingRightBracket :: Program -> Program
+matchingRightBracket p = b' 0 p where
+  b' :: Integer -> Program -> Program
+  b' 0 (Program _beginning (']':ps)) = Program (']':_beginning) ps
+  b' d (Program _beginning (']':ps)) = b' (d-1) $ Program (']':_beginning) ps
+  b' d (Program _beginning ('[':ps)) = b' (d+1) $ Program ('[':_beginning) ps
+  b' _ (Program _beginning (p:ps))  = b' 0 $ Program (p:_beginning) ps
+
+matchingLeftBracket :: Program -> Program
+matchingLeftBracket p = b' 0 p where
+  b' :: Int -> Program -> Program
+  b' d p  | (d==0) && (current p)=='[' = p
+          | (current p) == '[' = b' (d-1) (prev p)
+          | (current p) == ']' = b' (d+1) (prev p)
+--          | otherwise = b' d (prev p)
+  b' d p = b' d (prev p)
+  b' _d _p = error $ "Unexpected" ++ (show _d) ++ (show _p)
 
 -- Interpreter
 
@@ -65,7 +85,8 @@ data State = State {
 } deriving Show
 
 program :: Program
-program = Program [] ",>,>,+<+<+.>.>."
+--program = Program [] ",>,>,+<+<+.>.>."
+program = Program [] "+++[-.]"
 
 eval :: State -> State
 eval (State memory (Program _xs []) _) = State memory (Program _xs []) Exit
@@ -81,7 +102,12 @@ eval (State memory p _status) = State memory' ps' status' where
 
   ps' :: Program
   ps' = case (current p) of
-    --']' -> head stack
+    '[' -> case (get memory) of
+      '\NUL' -> matchingRightBracket p
+      _ -> next p
+    ']' -> case (get memory) of
+      '\NUL' -> next p
+      _ -> matchingLeftBracket p
     _ -> next p
 
   status' :: Status
@@ -101,14 +127,11 @@ run (State mem pc st) = do
     Exit -> do
       putStrLn "received exit"
     Input -> do
---      putStrLn "input: "
       c <- getChar
---      putStrLn $ "got: " ++ [c]
       let mem' = set c mem
       continueRun mem'
     Output c -> do
       putChar c
---      putStrLn $ "output: " ++ [c]
       continueRun mem
     _ -> do
       error $ "Unknown eval status" ++ (show st)
@@ -116,6 +139,7 @@ run (State mem pc st) = do
   where
     continueRun :: Memory -> IO ()
     continueRun mem = do
+      putStrLn $ show (State mem pc st)
       let foo = eval (State mem pc st)
     --  putStrLn "Again..."
       run foo

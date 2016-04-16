@@ -22,7 +22,7 @@ prev (Program [] ps) = error $ "prev Unexpected: " ++ ps
 matchingRightBracket :: Program -> Program
 matchingRightBracket prog = b' 0 (next prog) where
   b' :: Integer -> Program -> Program
-  b' 0 p | (current p) == ']' = p
+  b' 0 p  | (current p) == ']' = p
   b' d p  | (current p) == ']' = b' (d-1) (next p)
           | (current p) == '[' = b' (d+1) (next p)
           | otherwise = b' d (next p)
@@ -32,12 +32,10 @@ matchingRightBracket prog = b' 0 (next prog) where
 --matchingLeftBracket p = b' 0 p where
 --  b' :: Integer -> Program -> Program
 --  b' 0
---matchingLeftBracket :: Program -> Program
---matchingLeftBracket p = b' 0 p where
---  b' :: Int -> Program -> Program
---  b' d p  | (d==0) && (current p)=='[' = p
---          | (current p) == '[' = b' (d-1) (prev p)
---          | (current p) == ']' = b' (d+1) (prev p)
-----          | otherwise = b' d (prev p)
---  b' d p = b' d (prev p)
---  b' _d _p = error $ "Unexpected" ++ (show _d) ++ (show _p)
+matchingLeftBracket :: Program -> Program
+matchingLeftBracket program = b' 0 (prev program) where
+  b' :: Int -> Program -> Program
+  b' 0 p  | (current p) == '[' = p
+  b' d p  | (current p) == '[' = b' (d-1) (prev p)
+          | (current p) == ']' = b' (d+1) (prev p)
+          | otherwise = b' d (prev p)

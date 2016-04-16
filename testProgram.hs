@@ -9,8 +9,12 @@ testNew :: Test
 testNew = TestCase $ assertEqual "should return Program instance" (Program [] "+++") (new "+++")
 --result = matchingLeftBracket program
 
---testMatchingLeftBracket :: Test
---testMatchingLeftBracket = TestCase $ assertEqual "should move program pointer to matching left bracket"
+testMatchingLeftBracket :: Test
+testMatchingLeftBracket = TestCase $ assertEqual "should move program pointer to matching left bracket"
+  (Program "++" "[>>]--") (matchingLeftBracket (Program ">>[++" "]--"))
+
+--testMatchingLeftBracketNested :: Test
+--testMatchingLeftBracketNested = TestCase $ assertEqual "should move program pointer to matching left bracket"
 --  (Program "++" "[>>]--") (matchingLeftBracket (Program ">>[++" "]--"))
 
 testMatchingRightBracket :: Test
@@ -22,4 +26,4 @@ testMatchingRightBracketNested = TestCase $ assertEqual "should move program poi
   (Program "-][-++[" "]<>") (matchingRightBracket (Program "" "[++-[]-]<>"))
 
 main :: IO Counts
-main = runTestTT $ TestList [testNew, testMatchingRightBracket, testMatchingRightBracketNested]
+main = runTestTT $ TestList [testNew, testMatchingLeftBracket, testMatchingRightBracket, testMatchingRightBracketNested]

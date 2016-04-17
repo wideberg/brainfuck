@@ -1,5 +1,7 @@
 module Interpreter (Status(..), run) where
 
+import IO
+
 import Program
 import Memory
 
@@ -51,6 +53,7 @@ runState (State mem pc st) = do
       continueRun mem'
     Output c -> do
       putChar c
+      hFlush stdout
       continueRun mem
 
   where

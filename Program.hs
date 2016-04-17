@@ -18,7 +18,7 @@ next (Program _ []) = error "can't move past end of program"
 
 prev :: Program -> Program
 prev (Program (x:beg) end) = Program beg (x:end)
-prev (Program [] ps) = error $ "prev Unexpected: " ++ ps
+prev (Program [] _) = error $ "can't move past beginning or program"
 
 matchingRightBracket :: Program -> Program
 matchingRightBracket prog = b' 0 (next prog) where

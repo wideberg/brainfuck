@@ -4,4 +4,4 @@ import Interpreter
 
 main :: IO ()
 main = do
-  run "+++[-.]"
+  run "+++[>,+.<-]"

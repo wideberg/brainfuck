@@ -37,17 +37,14 @@ eval (State memory p _status) = State memory' ps' status' where
     '.' -> Output (get memory)
     ',' -> Input
     _ -> Running
---    '-' -> Running
---    _ -> error "Unknown operation (status)"
 
 runState :: State -> IO ()
 runState (State mem pc st) = do
-  --putStrLn "Running..."
   case st of
     Running -> do
       continueRun mem
     Exit -> do
-      putStrLn "received exit"
+      return ()
     Input -> do
       c <- getChar
       let mem' = set c mem
@@ -55,15 +52,11 @@ runState (State mem pc st) = do
     Output c -> do
       putChar c
       continueRun mem
---    _ -> do
---      error $ "Unknown eval status" ++ (show st)
 
   where
     continueRun :: Memory -> IO ()
     continueRun m = do
-      putStrLn $ show (State m pc st)
       let newState = eval (State m pc st)
-    --  putStrLn "Again..."
       runState newState
 
 run :: [Char] -> IO ()

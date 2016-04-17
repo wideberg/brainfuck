@@ -1,7 +1,5 @@
 module Interpreter (Status(..), run) where
 
-import IO
-
 import Program
 import Memory
 
@@ -40,28 +38,27 @@ eval (State memory p _status) = State memory' ps' status' where
     ',' -> Input
     _ -> Running
 
-runState :: State -> IO ()
-runState (State mem pc st) = do
-  case st of
-    Running -> do
-      continueRun mem
-    Exit -> do
-      return ()
-    Input -> do
-      c <- getChar
-      let mem' = set c mem
-      continueRun mem'
-    Output c -> do
-      putChar c
-      hFlush stdout
-      continueRun mem
+run :: (IO Char) -> (Char -> IO ()) -> [Char] -> IO ()
+run input output program = do
+  runState (State empty (new program) Running) where
 
-  where
-    continueRun :: Memory -> IO ()
-    continueRun m = do
-      let newState = eval (State m pc st)
-      runState newState
-
-run :: [Char] -> IO ()
-run program = do
-  runState (State empty (new program) Running)
+    runState :: State -> IO ()
+    runState (State mem pc st) = do
+      case st of
+        Running -> do
+          continueRun mem
+        Exit -> do
+          return ()
+        Input -> do
+          c <- input
+          let mem' = set c mem
+          continueRun mem'
+        Output c -> do
+          output c
+          continueRun mem
+    
+      where
+        continueRun :: Memory -> IO ()
+        continueRun m = do
+          let newState = eval (State m pc st)
+          runState newState

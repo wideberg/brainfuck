@@ -1,5 +1,5 @@
 all:	
-	ghc -Wall --make Brain -o brainfuck
+	ghc -Wall --make Brainfuck -o brainfuck
 
 clean:
 	-rm *.o *.hi brainfuck

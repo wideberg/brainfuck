@@ -5,9 +5,9 @@ import Memory
 
 data Status = Running | Input | Output Char | Exit deriving Show
 data State = State {
-  memory :: Memory,
-  pc :: Program,
-  status :: Status
+  _memory :: Memory,
+  _pc :: Program,
+  _status :: Status
 } deriving Show
 
 eval :: State -> State

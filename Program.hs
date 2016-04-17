@@ -1,4 +1,4 @@
-module Program where
+module Program (Program(..), new, current, next, prev, matchingLeftBracket, matchingRightBracket) where
 -- Program
 data Program = Program {
   beginning:: [Char],

@@ -55,16 +55,16 @@ runState (State mem pc st) = do
     Output c -> do
       putChar c
       continueRun mem
-    _ -> do
-      error $ "Unknown eval status" ++ (show st)
+--    _ -> do
+--      error $ "Unknown eval status" ++ (show st)
 
   where
     continueRun :: Memory -> IO ()
-    continueRun mem = do
-      putStrLn $ show (State mem pc st)
-      let foo = eval (State mem pc st)
+    continueRun m = do
+      putStrLn $ show (State m pc st)
+      let newState = eval (State m pc st)
     --  putStrLn "Again..."
-      runState foo
+      runState newState
 
 run :: [Char] -> IO ()
 run program = do

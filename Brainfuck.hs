@@ -1,7 +1,7 @@
 module Main where
 
 import System.Environment
-import IO
+import System.IO
 
 import Interpreter
 

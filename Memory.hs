@@ -1,6 +1,6 @@
 module Memory (Memory(..), inc, dec, forward, backward, get, set, empty) where
 
-import Char
+import Data.Char
 
 data Memory = Tape [Char] [Char]
 
